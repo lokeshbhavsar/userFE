@@ -1,5 +1,5 @@
 //END POINTS 
-const BACKEND_PORT = "https://userbackend-gamma.vercel.app/"
+const BACKEND_PORT = "https://userbackend-gamma.vercel.app/api"
 //USER
 const USER_ENDPOINTS = "users/";
 const REGISTER = "users/register";
