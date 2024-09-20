@@ -1,5 +1,5 @@
 //END POINTS 
-const BACKEND_PORT = "https://userbackend-gamma.vercel.app/api"
+const BACKEND_PORT = "https://userbackend-gamma.vercel.app/api/"
 //USER
 const USER_ENDPOINTS = "users/";
 const REGISTER = "users/register";
@@ -96,7 +96,7 @@ export function timeAgo(date) {
   interval = Math.floor(seconds / 60);
   if (interval >= 1) return interval === 1 ? "1 minute ago" : `${interval} minutes ago`;
 
-  return "just now";
+  return "just now";
 }
 
 export function debounce(func, delay) {

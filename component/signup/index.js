@@ -77,7 +77,7 @@ export default function Signup() {
                   <Link href="/dashboard">
                     <Image src={logo} width={180} alt="Logo" priority /> {/* Use Next.js Image */}
                   </Link>
-                  <p className="text-center">Your Social Campaigns</p>
+                  <p className="text-center">Register</p>
                   <form onSubmit={formik.handleSubmit}>
                     {formik.errors.general && <div className="alert alert-danger">{formik.errors.general}</div>}
                     <div className="mb-3">

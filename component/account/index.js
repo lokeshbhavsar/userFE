@@ -14,9 +14,9 @@ import { toast } from "react-toastify";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
-  name: Yup.string(),
-  gender: Yup.string(),
-  profileImg: Yup.mixed(),
+  name: Yup.string().required(),
+  gender: Yup.string().required(),
+  profileImg: Yup.mixed().required(),
 });
 
 export default function Account() {
@@ -26,10 +26,11 @@ export default function Account() {
   const { profile: username } = useParams();
   const router = useRouter();
   const { username: currentUser } = useSelector((state) => state?.user);
-
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
     async function fetchUserData() {
       try {
+        setLoading(true)
         const response = await apiRequest("get", `${GET_BY_USERNAME}${username}`);
         const user = response.data[0];
         if (!user) {
@@ -46,6 +47,9 @@ export default function Account() {
         }
       } catch (error) {
         console.error("Error fetching user data", error);
+      }
+      finally {
+        setLoading(false)
       }
     }
     fetchUserData();
@@ -88,7 +92,7 @@ export default function Account() {
         <section className="vh-100" style={{ backgroundColor: "#f4f5f7" }}>
           <div className="container py-5 h-100">
             <div className="row d-flex justify-content-center align-items-center h-100">
-              <div className="col col-lg-6 mb-4 mb-lg-0">
+              {!loading ? <div className="col col-lg-6 mb-4 mb-lg-0">
                 <div className="card mb-3" style={{ borderRadius: ".5rem" }}>
                   <div className="row g-0">
                     <div
@@ -242,6 +246,17 @@ export default function Account() {
                   </div>
                 </div>
               </div>
+                : <div className="row h-100 d-flex justify-content-center align-items-center">
+                  <div className="col text-center">
+                    <div
+                      className="spinner-border text-warning p-5"
+                      role="status"
+                      style={{ width: "4rem", height: "4rem" }}  // Custom size
+                    >
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                </div>}
             </div>
           </div>
         </section>
