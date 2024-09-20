@@ -415,3 +415,24 @@ a#sidebar-toggle {
 .cursor-pointer {
   cursor: pointer;
 }
+
+.avatar-img {
+  width: 100px;  /* Fixed width */
+  height: 100px; /* Fixed height */
+  object-fit: cover; /* Ensures image covers the area uniformly */
+  object-position: center; /* Center the image */
+}
+
+@media (min-width: 768px) {
+  .avatar-img {
+    width: 120px;  /* Larger size on medium screens and above */
+    height: 120px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .avatar-img {
+    width: 140px;  /* Larger size on large screens */
+    height: 140px;
+  }
+}

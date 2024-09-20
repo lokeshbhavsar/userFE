@@ -1,24 +1,17 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, } from "react";
 import Image from "next/image"; // Next.js optimized image component
 import { toast } from "react-toastify";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faComment } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from "../sidebar"; // Adjust path based on your structure
 import Comment from "./comment"; // Adjust path based on your structure
 import s1 from "../../public/images/products/s1.jpg"; // Next.js public folder for images
 import user1 from "../../public/images/profile/user1.jpg";
 import { useSelector } from "react-redux";
-import {
-  GET_ALL_POST,
-  GET_ALL_POST_BY_DESCRIPTION,
-  GET_ALL_USERS,
-  GET_BY_LIKE_USERNAME,
-  debounce,
-  timeAgo,
-} from "@/utils/constants";
+import { GET_ALL_POST, GET_ALL_POST_BY_DESCRIPTION, GET_ALL_USERS, GET_BY_LIKE_USERNAME, debounce, timeAgo } from "@/utils/constants";
 import apiRequest from "@/services/ApiService";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 export default function DashBoard() {
   const [isOn, setIsOn] = useState(false);
@@ -27,11 +20,17 @@ export default function DashBoard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [allPosts, setAllPosts] = useState([]);
   const [postSearchTerm, setPostSearchTerm] = useState("");
-  const [page, setPage] = useState(1); // Track current page
+  const [page, setPage] = useState(1);  // Track current page
   const [loading, setLoading] = useState(false); // Track loading state
-  const username = useSelector((state) => state?.user);
   const router = useRouter();
+  const [hasMorePost, setHasMorePost] = useState(false)
+  const [usersLoading, setUsersLoading] = useState(false); // Track loading state
 
+  useEffect(() => {
+    if (!hasMorePost) {
+      setLoading(false)
+    }
+  }, [hasMorePost, loading])
   const handleToggle = () => {
     setIsOn(!isOn);
   };
@@ -42,14 +41,16 @@ export default function DashBoard() {
 
   const fetchPosts = async (page) => {
     if (loading) return; // Prevent multiple requests
-    setLoading(true);
     try {
-      const response = await apiRequest("get", `${GET_ALL_POST}?page=${page}`);
-      setAllPosts((prevPosts) => [...prevPosts, ...response?.data?.posts]); // Append new posts
-      setLoading(false);
+      setLoading(true)
+      const response = await apiRequest('get', `${GET_ALL_POST}?page=${page}`);
+      setAllPosts(prevPosts => [...prevPosts, ...response?.data?.posts]); // Append new posts
+      setHasMorePost(response?.data?.hasMorePosts);
     } catch (error) {
       console.error("Error fetching posts", error);
-      setLoading(false);
+    }
+    finally {
+      setLoading(false)
     }
   };
 
@@ -61,41 +62,43 @@ export default function DashBoard() {
 
   const handleScroll = () => {
     if (postSearchTerm === "") {
-      const bottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight;
+      const bottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight;
       if (bottom && !loading) {
-        setPage((prevPage) => prevPage + 1); // Load next page
+        setPage(prevPage => prevPage + 1); // Load next page
       }
     }
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [loading, postSearchTerm]);
 
   const getAllUserApi = async (query = "") => {
     try {
-      const response = await apiRequest(
-        "get",
-        `${GET_ALL_USERS}?search=${query}`
-      );
+      setUsersLoading(true)
+      setMyConnections([])
+      const response = await apiRequest('get', `${GET_ALL_USERS}?search=${query}`);
       setMyConnections(response?.data);
     } catch (error) {
       console.error("Error fetching users", error);
+    }
+    finally {
+      setUsersLoading(false)
     }
   };
 
   const searchUserName = async (query = "") => {
     try {
-      const response = await apiRequest(
-        "get",
-        `${GET_BY_LIKE_USERNAME}${query}`
-      );
+      setUsersLoading(true)
+      setMyConnections([])
+      const response = await apiRequest('get', `${GET_BY_LIKE_USERNAME}${query}`);
       setMyConnections(response?.data);
     } catch (error) {
       console.error("Error fetching users", error);
+    }
+    finally {
+      setUsersLoading(false)
     }
   };
 
@@ -103,20 +106,18 @@ export default function DashBoard() {
   const debouncedGetAllUserApi = useCallback(
     debounce((query) => {
       if (query) {
-        searchUserName(query); // Only search if the query is non-empty
+        searchUserName(query);  // Only search if the query is non-empty
       }
-    }, 1000),
-    []
+    }, 1000), []
   );
 
   // Debounced search function for posts
   const debouncedGetAllPostsApi = useCallback(
     debounce((query) => {
       if (query) {
-        getPostByDescription(query); // Only search if the query is non-empty
+        getPostByDescription(query);  // Only search if the query is non-empty
       }
-    }, 1000),
-    []
+    }, 1000), []
   );
 
   useEffect(() => {
@@ -134,13 +135,15 @@ export default function DashBoard() {
 
   const getPostByDescription = async (query = "") => {
     try {
-      setAllPosts([]);
-      const response = await apiRequest("post", GET_ALL_POST_BY_DESCRIPTION, {
-        description: query,
-      });
+      setLoading(true)
+      setAllPosts([])
+      const response = await apiRequest('post', GET_ALL_POST_BY_DESCRIPTION, { description: query });
       setAllPosts(response?.data);
     } catch (error) {
       console.error("Error searching posts by description", error);
+    }
+    finally {
+      setLoading(false)
     }
   };
 
@@ -166,14 +169,20 @@ export default function DashBoard() {
   };
 
   const updatePostComments = (postId, newComment) => {
-    setAllPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.pid === postId
-          ? { ...post, comments: [...post.comments, ...newComment] }
+    setAllPosts(prevPosts =>
+      prevPosts?.map(post =>
+        post?.pid === postId
+          ? { ...post, comments: [...post?.comments, ...newComment] }
           : post
       )
     );
   };
+
+  useEffect(() => {
+    if (!loading) {
+      setLoading(false)
+    }
+  }, [loading])
 
   return (
     <div id="wrapper">
@@ -183,10 +192,7 @@ export default function DashBoard() {
           <div className="col-lg-12">
             <div className="mt-4">
               <div className="row">
-                <button
-                  className="btn btn-primary connections"
-                  onClick={handleToggle}
-                >
+                <button className="btn btn-primary connections" onClick={handleToggle}>
                   My connections
                 </button>
                 {/* Search and Results Section */}
@@ -206,19 +212,11 @@ export default function DashBoard() {
                   </div>
                   {allPosts?.map((item) => (
                     <div className="card post" key={item?.pid}>
-                      <Image
-                        src={item?.image}
-                        width={100}
-                        height={100}
-                        className="card-img-top"
-                        alt="Product Image"
-                      />
+                      <Image src={item?.image} width={100} height={100} className="card-img-top" alt="Product Image" />
                       <div className="card-body">
                         <p className="card-text">
                           {item?.description}
-                          <span className="text-muted small">
-                            • {timeAgo(item?.timestamp)}
-                          </span>
+                          <span className="text-muted small">• {timeAgo(item?.timestamp)}</span>
                         </p>
                         <FontAwesomeIcon
                           onClick={() => handleCommentToggle(item?.pid)}
@@ -237,12 +235,29 @@ export default function DashBoard() {
                       </div>
                     </div>
                   ))}
+                  {
+                    loading &&
+                    <div className="card post p-5" >
+                      <div className="row h-100 d-flex justify-content-center align-items-center">
+                        <div className="col text-center">
+                          <div
+                            className="spinner-border text-warning p-3"
+                            role="status"
+                            style={{ width: "4rem", height: "4rem" }}  // Custom size
+                          >
+                            <span className="sr-only">Loading...</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                  {
+                    allPosts?.length == 0 && !loading && <h2 className="text-center">No records found</h2>
+                  }
                 </div>
 
                 {/* Connections Section */}
-                <div
-                  className={`col-md-6 ${isOn ? "activeTab" : "unActiveTab"}`}
-                >
+                <div className={`col-md-6 ${isOn ? 'activeTab' : 'unActiveTab'}`}>
                   <div className="card p-4 user_live">
                     <div className="input-group mb-3">
                       <input
@@ -262,31 +277,46 @@ export default function DashBoard() {
                     <div className="connections">
                       <h6>My connections</h6>
                       <div className="row">
-                        {myConnections.map((elem, idx) => (
-                          <div
-                            className="col-6 col-lg-3 text-center mb-3"
-                            key={idx}
-                          >
+                        {myConnections?.map((elem, idx) => (
+                          <div className="col-6 col-lg-3 text-center mb-3" key={idx}>
                             <div className="avatar">
                               <Image
-                                width={100}
-                                height={100}
+                                width={100} height={100}
+
                                 src={elem?.profileImage}
                                 alt="Avatar"
-                                className="img-fluid rounded-circle  cursor-pointer"
+                                className="img-fluid avatar-img rounded-circle cursor-pointer"
                                 onClick={() => {
                                   toast.info("Redirecting...");
                                   router.push(`/profile/${elem?.username}`);
                                 }}
                               />
-                              <div
-                                className={`status-indicator status-${idx % 3}`}
-                              />
+
+                              <div className={`status-indicator status-${idx % 3}`} />
                               <div className="active"></div>
                             </div>
                             <p className="mt-2">{elem?.name}</p>
                           </div>
                         ))}
+                        {usersLoading &&
+                          <div className="row h-100 d-flex justify-content-center align-items-center">
+                            <div className="col text-center">
+                              <div
+                                className="spinner-border text-warning p-5"
+                                role="status"
+                                style={{ width: "4rem", height: "4rem" }}  // Custom size
+                              >
+                                <span className="sr-only">Loading...</span>
+                              </div>
+                            </div>
+                          </div>}
+                        <div className="row h-100 d-flex justify-content-center align-items-center">
+                          <div className="col text-center">
+                            {
+                              myConnections?.length == 0 && !usersLoading && <h2>No records found</h2>
+                            }
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
