@@ -11,6 +11,7 @@ import Sidebar from "../sidebar";
 import apiRequest from "@/services/ApiService";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -94,9 +95,9 @@ export default function Account() {
             <div className="row d-flex justify-content-center align-items-center h-100">
               {!loading ? <div className="col col-lg-6 mb-4 mb-lg-0">
                 <div className="card mb-3" style={{ borderRadius: ".5rem" }}>
-                  <div className="row g-0">
+                  <div className="row g-0 row-cols-1">
                     <div
-                      className="col-md-4 gradient-custom text-center text-white"
+                      className="col-md-4 gradient-custom text-center text-black"
                       style={{
                         borderTopLeftRadius: ".5rem",
                         borderBottomLeftRadius: ".5rem",
@@ -110,7 +111,11 @@ export default function Account() {
                         className="img-fluid my-5"
                       />
                       <h5>{userData?.name}</h5>
-                      <p>Web Designer</p>
+                      <div className="col">
+                        <Link href={`/posts/${username}`}>
+                          <button type="button" class="btn btn-primary rounded">View Posts</button>
+                        </Link>
+                      </div>
                       <i className="far fa-edit mb-5"></i>
                     </div>
                     <div className="col-md-8">
@@ -174,27 +179,29 @@ export default function Account() {
                                     />
                                   </div>
                                 </div>
+                                {
+                                  isEditing && <div className="mb-3">
+                                    <h6>Profile Image</h6>
+                                    <input
+                                      type="file"
+                                      className="form-control"
+                                      onChange={(event) => {
+                                        const file = event.target.files[0];
+                                        setFieldValue("profileImg", file);
+                                        if (file) {
+                                          setProfileImgUrl(URL.createObjectURL(file));
+                                        }
+                                      }}
+                                      disabled={!isEditing}
+                                    />
+                                    <ErrorMessage
+                                      name="profileImg"
+                                      component="div"
+                                      className="text-danger"
+                                    />
+                                  </div>
+                                }
 
-                                <div className="mb-3">
-                                  <h6>Profile Image</h6>
-                                  <input
-                                    type="file"
-                                    className="form-control"
-                                    onChange={(event) => {
-                                      const file = event.target.files[0];
-                                      setFieldValue("profileImg", file);
-                                      if (file) {
-                                        setProfileImgUrl(URL.createObjectURL(file));
-                                      }
-                                    }}
-                                    disabled={!isEditing}
-                                  />
-                                  <ErrorMessage
-                                    name="profileImg"
-                                    component="div"
-                                    className="text-danger"
-                                  />
-                                </div>
 
                                 <div className="row pt-1">
                                   <div className="col-6 mb-3">

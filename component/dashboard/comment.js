@@ -6,7 +6,7 @@ import apiRequest from "@/services/ApiService";
 import { ADD_COMMENT, formatTime } from "@/utils/constants";
 import { toast } from "react-toastify";
 
-export default function Comment({ owner, pid, comments, setIsComment, updatePostComments }) {
+export default function Comment({ profileImages,owner, pid, comments, setIsComment, updatePostComments }) {
   const { username } = useSelector((state) => state?.user); // Get username from state
   const [commentText, setCommentText] = useState(""); // State to hold comment input
   const [isMounted, setIsMounted] = useState(false); // State to check if the component is mounted
@@ -15,13 +15,17 @@ export default function Comment({ owner, pid, comments, setIsComment, updatePost
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
   // useCallback to memoize functions
   const handleCommentChange = useCallback((e) => {
     setCommentText(e.target.value); // Update the comment input value
   }, []);
 
   const addComment = useCallback(async () => {
+    if(!commentText)
+    {
+      toast.error("empty comment not allowed")
+      return
+    }
     try {
       const payload = {
         pid, // Use dynamic post ID
@@ -62,8 +66,8 @@ export default function Comment({ owner, pid, comments, setIsComment, updatePost
     <div className="container mt-4 comment">
       <div className="d-flex align-items-start mb-3">
         <Image
-          src={user1}
-          className="rounded-circle me-2"
+          src={profileImages?.[username]||""}
+          className="rounded-circle me-5"
           alt="User Avatar"
           width={50}
           height={50}
@@ -86,6 +90,7 @@ export default function Comment({ owner, pid, comments, setIsComment, updatePost
             <button
               className="btn btn-primary"
               onClick={addComment}
+              disabled={!commentText}
             >
               Comment
             </button>
@@ -96,8 +101,8 @@ export default function Comment({ owner, pid, comments, setIsComment, updatePost
       {comments?.map((el, i) => (
         <div className="d-flex align-items-start mb-3" key={i}>
           <img
-            src="https://via.placeholder.com/50"
-            className="rounded-circle me-2"
+            src={profileImages?.[el?.username]}
+            className="rounded-circle me-5"
             alt="User Avatar"
           />
           <div className="w-100">

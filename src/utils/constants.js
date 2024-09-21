@@ -1,5 +1,6 @@
 //END POINTS 
 const BACKEND_PORT = "https://userbackend-gamma.vercel.app/api/"
+// const BACKEND_PORT = "http://localhost:5000/api"
 //USER
 const USER_ENDPOINTS = "users/";
 const REGISTER = "users/register";
@@ -20,6 +21,7 @@ const UPDATE_POST = "posts/updatePost"
 const DELETE_POST = "posts/deletePost"
 const GET_ALL_POST_BY_DESCRIPTION = "posts/getPostByDescription"
 const ADD_COMMENT = "posts/addComment"
+const UPDATE_DESCRIPTION="posts/updatePostDescription"
 export {
   BACKEND_PORT,
   USER_ENDPOINTS,
@@ -38,7 +40,8 @@ export {
   GET_POST_BY_ID,
   GET_ALL_POST,
   GET_ALL_POST_BY_DESCRIPTION,
-  ADD_COMMENT
+  ADD_COMMENT,
+  UPDATE_DESCRIPTION
 };
 
 export function formatTime(objectId) {

@@ -418,7 +418,7 @@ a#sidebar-toggle {
 
 .avatar-img {
   width: 100px;  /* Fixed width */
-  height: 100px; /* Fixed height */
+  height: 70px; /* Fixed height */
   object-fit: cover; /* Ensures image covers the area uniformly */
   object-position: center; /* Center the image */
 }

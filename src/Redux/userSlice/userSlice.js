@@ -4,6 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     isLoggedIn: false,
     username: '',
+    webSocket:false
 };
 
 const userSlice = createSlice({
@@ -15,6 +16,9 @@ const userSlice = createSlice({
             state.username = action.payload.username;
             state.isLoggedIn = true;
         },
+        setWebSocket: (state, action) => {
+            state.webSocket = !state.webSocket ;
+        },
         // Log out user and clear user information
         logOut: (state) => {
             state.username = '';
@@ -25,5 +29,5 @@ const userSlice = createSlice({
     },
 });
 
-export const { setUserInfo, logOut, resetUserState } = userSlice.actions;
+export const { setUserInfo, logOut, resetUserState,setWebSocket } = userSlice.actions;
 export default userSlice.reducer;
