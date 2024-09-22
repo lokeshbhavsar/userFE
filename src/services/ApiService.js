@@ -1,5 +1,6 @@
 import { BACKEND_PORT } from '@/utils/constants';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const api = axios.create({
   baseURL: BACKEND_PORT,
@@ -63,6 +64,9 @@ const apiRequest = async (method, url, data = {}) => {
     const response = await ApiService[method](url, data, config);
     return response;
   } catch (error) {
+    if(error?.response?.data?.message)
+      toast.error(error?.response?.data?.message)
+  
     console.error(`Error in ${method.toUpperCase()} request to ${url}`, error);
     // It's a good practice to return or throw the error so the calling function can handle it
   }
