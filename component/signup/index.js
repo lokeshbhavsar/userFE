@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import apiRequest from '@/services/ApiService';
 import { REGISTER } from '@/utils/constants';
 import { toast } from 'react-toastify';
+import { useRouter } from "next/navigation";
 
 // Validation schema using Yup
 const validationSchema = Yup.object({
@@ -29,6 +30,7 @@ const validationSchema = Yup.object({
 });
 
 export default function Signup() {
+  const router = useRouter();
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -52,8 +54,8 @@ export default function Signup() {
         formData.append('username', values.username);
         const result = await apiRequest('post', REGISTER, formData, { 'Content-Type': 'multipart/form-data' });
         if (result) {
+          router.push('/login');
           toast.success("Registered Successfully");
-          window.location.href = '/login';
         }
         // Redirect after successful registration
       } catch (error) {
@@ -162,9 +164,10 @@ export default function Signup() {
                           formik.setFieldValue('age', age);
                         }}
                         onBlur={formik.handleBlur}
+                        onFocus={(e) => e.target.showPicker()}
                       />
                       {formik.errors.age && formik.touched.age && <div className="text-danger">{formik.errors.age}</div>}
-                    </div>
+                    </div>
                     <div className="mb-3">
                       <label htmlFor="image" className="form-label">Profile Image</label>
                       <input
