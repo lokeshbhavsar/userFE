@@ -149,18 +149,22 @@ export default function Signup() {
                       {formik.errors.gender && formik.touched.gender && <div className="text-danger">{formik.errors.gender}</div>}
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="age" className="form-label">Age</label>
+                      <label htmlFor="age" className="form-label">Date of Birth</label>
                       <input
-                        type="number"
+                        type="date"
                         className="form-control"
                         id="age"
                         name="age"
-                        value={formik.values.age}
-                        onChange={formik.handleChange}
+                        max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]} // Set max date to today - 18 years
+                        onChange={(event) => {
+                          const selectedDate = new Date(event.target.value);
+                          const age = new Date().getFullYear() - selectedDate.getFullYear();
+                          formik.setFieldValue('age', age);
+                        }}
                         onBlur={formik.handleBlur}
                       />
                       {formik.errors.age && formik.touched.age && <div className="text-danger">{formik.errors.age}</div>}
-                    </div>
+                    </div>
                     <div className="mb-3">
                       <label htmlFor="image" className="form-label">Profile Image</label>
                       <input
